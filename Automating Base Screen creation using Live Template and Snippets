@@ -1,0 +1,108 @@
+# BaseScreen Boilerplate Reduction Guide
+
+## Why this document exists
+
+In our project, most screens are built on a custom `BaseScreen` + `BaseScreenState` pattern. This gives consistency (lifecycle, app bar behavior, shared structure), but it also means each new screen usually needs more boilerplate than a standard Flutter `stl`/`stf` widget.
+
+Without automation, developers repeatedly write:
+- Screen class extending `BaseScreen`
+- State class extending `BaseScreenState<ScreenName>`
+- Common overrides (for example `showAppBar`, `isBackButtonEnabled`)
+- `body(BuildContext buildContext)` implementation scaffold
+
+This is repetitive and error-prone (wrong generic type, missed override, missing imports).
+
+## Recommended approach
+
+Use editor automation:
+- VS Code snippets (workspace-level)
+- Android Studio Live Templates
+
+This keeps logic consistent and significantly reduces manual typing when creating new screens.
+
+## What gets better with snippets/templates
+
+- Faster screen creation (seconds instead of minutes)
+- Fewer copy/paste errors
+- Consistent class/state naming patterns
+- Consistent default overrides across modules
+- Easier onboarding for new developers
+
+## VS Code setup
+
+### 1) Create workspace snippet file
+
+Create file:
+- `.vscode/dart.code-snippets`
+
+### 2) Add snippet entries
+
+Use prefixes such as:
+- `bss` for full `BaseScreen + BaseScreenState`
+- `bstate` for state-only block
+
+### 3) Ensure suggestions are enabled
+
+In `.vscode/settings.json`, ensure snippet settings are enabled (Tab completion, snippet suggestions visible).
+
+### 4) Usage
+
+- Open any `.dart` file
+- Type `bss` or `bstate`
+- Press `Tab`
+
+If needed:
+- Use `Ctrl+Space` to open suggestions and select the snippet
+- Run **Developer: Reload Window** once after first setup
+
+## Android Studio setup (Live Templates)
+
+### 1) Open Live Templates
+
+- `Settings` -> `Editor` -> `Live Templates`
+- Select `Dart` group (or create one)
+
+### 2) Create template
+
+- Add a new Live Template
+- Abbreviation: `bss` (or `bstate`)
+- Description: for example "BaseScreen template"
+
+### 3) Set template context (required)
+
+Set context to:
+- **Dart: top-level**
+
+You may also enable `Dart: declaration`, but **Dart: top-level** must be included for screen class generation.
+
+### 4) Configure expand shortcut
+
+- Set expand by `Tab` (or use `Ctrl+J` to manually insert)
+
+### 5) Usage
+
+- Open a Dart file
+- Put cursor at top-level scope
+- Type abbreviation (`bss`/`bstate`)
+- Press `Tab` (or `Ctrl+J`)
+
+## Troubleshooting checklist
+
+### VS Code
+
+- Snippet file is valid JSON and in `.vscode/dart.code-snippets`
+- File language mode is Dart
+- Snippet suggestions are enabled
+- Reload window after adding snippets
+
+### Android Studio
+
+- Context includes **Dart: top-level**
+- Abbreviation has no spaces
+- Cursor is in top-level scope (not inside a method)
+- `Expand Live Template by Tab` key binding is active
+- `Ctrl+J` shows your template in the list
+
+## Team recommendation
+
+Treat `bss` / `bstate` as project-standard shortcuts for new screen creation. This keeps code style and inheritance pattern aligned with the custom base screen architecture while reducing repetitive manual work.
