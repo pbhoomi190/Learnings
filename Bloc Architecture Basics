@@ -1,0 +1,82 @@
+Bloc Architecture & State Flow
+📌 What It Is
+
+A state management pattern where:
+
+UI sends Event
+
+Bloc processes logic
+
+Bloc emits State
+
+UI rebuilds based on State
+
+State is immutable
+
+========================================================
+🧠 When To Use
+
+Medium to large apps
+
+Complex UI with multiple states
+
+Clear separation of UI & business logic
+
+When scalability matters
+
+=========================================================
+🛠 How To Create
+
+Basic structure:
+
+// Event
+abstract class LoginEvent {}
+class LoginSubmitted extends LoginEvent {}
+
+// State
+abstract class LoginState {}
+class LoginLoading extends LoginState {}
+class LoginSuccess extends LoginState {}
+class LoginFailure extends LoginState {}
+
+// Bloc
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginBloc() : super(LoginInitial()) {
+    on<LoginSubmitted>((event, emit) async {
+      emit(LoginLoading());
+      // call repository
+    });
+  }
+}
+
+=========================================================
+
+Rebuild Optimization in Bloc
+📌 What It Is
+
+Controlling which widgets rebuild when state changes.
+
+🧠 When To Use
+
+Large UI screens
+
+Frequently updating data
+
+Performance-sensitive widgets
+
+🛠 How To Create
+
+Option 1 – buildWhen
+
+BlocBuilder<UserBloc, UserState>(
+  buildWhen: (prev, curr) =>
+      prev.image != curr.image,
+  builder: ...
+);
+
+Option 2 – BlocSelector
+
+BlocSelector<UserBloc, UserState, String>(
+  selector: (state) => state.image,
+  builder: ...
+);
