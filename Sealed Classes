@@ -1,0 +1,14 @@
+📌 What It Is
+A restricted class that can only be extended by specific subclasses in the same file.
+Used to model finite states.
+
+🧠 When To Use
+API result modeling
+Bloc states
+Controlled state hierarchies
+
+🛠 How To Create
+sealed class LoginResult {}
+
+class LoginSuccess extends LoginResult {}
+class LoginFailure extends LoginResult {}
