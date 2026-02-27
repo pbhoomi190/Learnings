@@ -1,0 +1,96 @@
+🔹 Scenario
+Screen opens
+If printer not connected → show confirmation popup
+Popup has Yes / No
+On Yes:
+Dismiss dialog
+Navigate to printer connection tab
+Problem faced:
+context.pop() did not dismiss the dialog and navigation carried the dialog along.
+Root cause:
+Used parent screen’s context instead of dialog builder’s context.
+
+=================================================
+
+Why This Happened
+Important Concept:
+Every BuildContext belongs to a specific position in the widget tree.
+When you call:
+showDialog(
+  context: context,
+  builder: (context) {
+    return AlertDialog(...);
+  },
+);
+The builder gives you a new context.
+That context belongs to the dialog’s overlay route.
+
+===============================================
+
+What You Did (Wrong Way)
+Inside Yes button:
+void onYesClick() {
+  context.pop(); // using parent screen context
+  navigateToPrinterTab();
+}
+That context was:
+The main screen’s context
+Not the dialog’s context
+So Flutter tried to pop from the wrong navigator level.
+Result:
+Dialog did not dismiss properly
+Navigation happened at main navigator
+Dialog overlay remained
+
+==============================================
+
+What Actually Happens Internally
+showDialog() pushes a new route on top of the current route.
+Stack looks like:
+MainScreenRoute
+   ↓
+DialogRoute
+To close dialog:
+You must pop the DialogRoute.
+If you use main screen context:
+It tries to pop MainScreenRoute instead
+Or operates on wrong navigator instance
+Hence unexpected behavior.
+
+=============================================
+
+Correct Implementation
+Use dialog builder’s context:
+showDialog(
+  context: context,
+  builder: (dialogContext) {
+    return AlertDialog(
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(dialogContext); // Correct
+            navigateToPrinterTab();
+          },
+          child: Text("Yes"),
+        ),
+      ],
+    );
+  },
+);
+Now:
+dialogContext refers to DialogRoute
+Navigator.pop(dialogContext) removes dialog correctly
+Then navigation works cleanly
+
+Golden Rule About Context
+Always use the closest context that owns the widget you want to manipulate.
+
+============================================
+
+When Working With BuildContext:
+Context is tied to widget position.
+Use the closest context for navigation operations.
+Dialog builder provides a new context for dialog route.
+Using wrong context may pop wrong route or not dismiss dialog.
+Never use stale context after dispose.
+Always check mounted after async operations.
