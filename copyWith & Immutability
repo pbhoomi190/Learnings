@@ -61,3 +61,40 @@ class User {
 Now:
 user.hobbies.add("Travel"); // ❌ Error
 Now it is truly immutable.
+
+
+==============================
+
+What Is copyWith?
+copyWith is a helper method used in immutable classes to:
+Create a new object by copying the existing object and modifying only selected fields.
+
+Example With copyWith
+class UserState {
+  final String name;
+  final String email;
+  final String profileImage;
+
+  UserState({
+    required this.name,
+    required this.email,
+    required this.profileImage,
+  });
+
+  UserState copyWith({
+    String? name,
+    String? email,
+    String? profileImage,
+  }) {
+    return UserState(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      profileImage: profileImage ?? this.profileImage,
+    );
+  }
+}
+Usage:
+emit(state.copyWith(profileImage: newImage));
+Clean.
+Safe.
+Immutable.
