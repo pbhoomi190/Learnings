@@ -1,0 +1,67 @@
+What Is mounted in Flutter?
+mounted is a boolean property available inside a State class.
+@override
+void initState() {
+  super.initState();
+}
+Internally:
+bool get mounted;
+It tells you:
+Whether this State object is currently attached to the widget tree.
+
+====================================
+
+When Is mounted True?
+After initState
+While widget is visible in UI
+Before dispose
+When Does It Become False?
+After:
+@override
+void dispose() {
+  super.dispose();
+}
+Once disposed → mounted = false
+The widget is no longer in the widget tree.
+
+======================================
+
+Why Is It Important?
+Because async operations may complete after the widget is removed.
+Example:
+void loadData() async {
+  await Future.delayed(Duration(seconds: 3));
+  setState(() {
+    data = "Loaded";
+  });
+}
+If user navigates away before 3 seconds:
+Widget is disposed
+setState() runs on a dead widget
+App crashes
+
+=======================================
+
+Common Situations Where mounted Is Required
+API calls
+Delayed operations
+Navigation after await
+Showing dialogs/snackbars after async
+Animation callbacks
+Timers
+Example:
+await apiCall();
+
+if (!mounted) return;
+
+Navigator.push(context, ...);
+
+==========================================
+
+What Problem Does It Actually Solve?
+It prevents:
+Updating UI after the widget is removed.
+Which protects against:
+Memory leaks
+Unexpected crashes
+Invalid context usage
