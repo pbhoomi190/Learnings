@@ -1,0 +1,110 @@
+When you call:
+Navigator.of(context)
+Flutter finds the nearest Navigator above that context in the widget tree.
+But sometimes there are multiple Navigators.
+rootNavigator: true tells Flutter:
+Ignore nested navigators. Use the top-most (root) navigator in the app.
+
+
+🔎 Why Are There Multiple Navigators?
+Common situations:
+BottomNavigationBar with separate navigation stacks per tab
+Nested navigation (e.g., inside a feature module)
+showDialog / showModalBottomSheet
+ShellRoute in GoRouter
+Navigator inside a modal
+
+
+🔥 Example Scenario: Bottom Navigation
+Structure:
+MaterialApp
+   ↓
+Root Navigator
+   ↓
+HomeScreen
+   ↓
+Tab1 Navigator
+   ↓
+Tab1 Page
+Each tab may have its own Navigator.
+
+
+❗ Problem Without rootNavigator
+Suppose you show a dialog inside Tab1:
+showDialog(
+  context: context,
+  builder: (_) => AlertDialog(...),
+);
+Now you want to dismiss it from somewhere else:
+Navigator.of(context).pop();
+If context belongs to Tab1’s nested navigator,
+it may try to pop the tab route instead of the dialog.
+Unexpected behavior:
+Screen pops instead of dialog
+Nothing happens
+Wrong stack manipulated
+
+
+✅ Using rootNavigator: true
+Navigator.of(context, rootNavigator: true).pop();
+Now Flutter:
+Looks for the top-most navigator
+Pops from the root navigation stack
+Ensures dialog is dismissed properly
+
+
+🧠 What Actually Happens Internally
+Navigator lookup algorithm:
+Without rootNavigator:
+Find nearest ancestor Navigator
+With rootNavigator: true:
+Traverse up to the very top Navigator in the app
+
+
+🔥 When You Typically Need It
+1️⃣ Dismissing Dialog From Nested Navigation
+If dialog was shown using root navigator but you are inside nested tab context.
+
+2️⃣ When Using BottomNavigationBar with Separate Navigators
+Each tab may have:
+Navigator(
+  key: tabNavigatorKey,
+)
+If you call pop normally,
+it may pop tab stack instead of global overlay.
+
+3️⃣ When You Want Global Navigation
+Example:
+Force logout
+Show global loading dialog
+Show app-level error dialog
+You want to affect the entire app navigation, not local stack.
+
+
+❌ When You Should NOT Use It
+If you’re intentionally navigating within a tab’s own stack.
+Using rootNavigator in that case:
+Breaks tab-level navigation logic
+Pops entire app stack unexpectedly
+
+🔎 Clean Comparison
+Call	What It Pops
+Navigator.of(context).pop()	Nearest navigator
+Navigator.of(context, rootNavigator: true).pop()	Top-most navigator
+
+🎯 Simple Rule
+If you are unsure:
+Ask yourself:
+Do I want to affect only this local flow or the entire app navigation?
+Local flow → normal pop
+Global overlay/dialog → rootNavigator
+
+🧩 Real-World Example
+If dialog shown like this:
+showDialog(
+  context: context,
+  useRootNavigator: true,
+)
+Then you should dismiss it using:
+Navigator.of(context, rootNavigator: true).pop();
+Consistency matters.
