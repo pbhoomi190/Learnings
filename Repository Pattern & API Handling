@@ -1,0 +1,33 @@
+📌 What It Is
+Abstraction layer between data source and business logic.
+Repository:
+Calls API
+Converts response
+Returns domain-level result
+
+🧠 When To Use
+Any app with API calls
+Clean architecture
+Separation of concerns
+
+🛠 How To Create
+sealed class Result<T> {}
+
+class Success<T> extends Result<T> {
+  final T data;
+  Success(this.data);
+}
+
+class Failure<T> extends Result<T> {
+  final String message;
+  Failure(this.message);
+}
+
+Future<Result<User>> login() async {
+  try {
+    final response = await api.login();
+    return Success(User.fromJson(response.data));
+  } catch (e) {
+    return Failure("Login failed");
+  }
+}
