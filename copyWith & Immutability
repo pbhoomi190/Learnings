@@ -1,0 +1,63 @@
+📌 What It Is
+Creates a new object while updating only selected fields.
+
+🧠 When To Use
+Immutable state models
+Bloc state updates
+Model updates
+
+🛠 How To Create
+UserState copyWith({
+  String? name,
+  String? email,
+}) {
+  return UserState(
+    name: name ?? this.name,
+    email: email ?? this.email,
+  );
+}
+
+=============================
+
+Immutability means:
+Once an object is created, its values cannot be changed.
+Instead of modifying an object,
+you create a new one.
+
+When Is a Class Immutable?
+A class is truly immutable when:
+✅ All fields are final
+✅ No setters
+✅ No mutable objects inside
+✅ Collections are unmodifiable
+✅ Object state cannot change after creation
+
+Why Adding final Is NOT Enough
+Many people think:
+“If all variables are final, the class is immutable.”
+This is only partially true.
+final means:
+The reference cannot be reassigned.
+It does NOT mean:
+The internal object cannot change.
+
+==============================
+
+Shallow vs Deep Immutability
+🔹 Shallow Immutability
+Reference cannot change
+Internal object can still mutate
+Example:
+final List<String> hobbies;
+🔹 Deep Immutability
+Neither reference nor internal data can change
+Example:
+class User {
+  final List<String> hobbies;
+
+  User(List<String> hobbies)
+      : hobbies = List.unmodifiable(hobbies);
+}
+Now:
+user.hobbies.add("Travel"); // ❌ Error
+Now it is truly immutable.
