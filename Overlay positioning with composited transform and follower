@@ -1,0 +1,83 @@
+I used CompositedTransformTarget, CompositedTransformFollower, 
+and LayerLink to position a dropdown menu precisely above the center of a split button in my UI. 
+This ensured the overlay stayed aligned even during layout changes, scrolling, or screen resizing.
+
+The Core Idea
+These three work together to:
+Attach one widget to another widget’s position — even if they are in different parts of the widget tree (like inside an Overlay).
+Think:
+Target → “Here is my position.”
+Follower → “Stick to that position.”
+LayerLink → “Connection wire between them.”
+
+
+How It Works (Simple Concept)
+CompositedTransformTarget marks the widget whose position should be tracked.
+LayerLink connects the target and follower.
+CompositedTransformFollower, typically inside an Overlay, attaches a floating widget to follow the target’s position.
+This setup lets the follower update its transform automatically based on the target’s position at render time.
+
+When Should You Use This?
+Use it when:
+Building custom dropdown
+Building autocomplete
+Showing popup below a TextField
+Floating menu attached to icon
+Tooltip that must track scrolling
+
+🚨 Common Mistakes
+Creating different LayerLink objects
+→ Must use the same instance.
+Not inserting follower inside Overlay
+→ It works best when used in Overlay.
+Forgetting showWhenUnlinked: false
+→ Prevents weird rendering when target disappears.
+
+🧩 Simple Mental Model
+LayerLink = Wire
+Target    = Leader
+Follower  = Follows leader position
+
+=====================================
+
+final LayerLink _link = LayerLink();
+
+OverlayEntry? _overlayEntry;
+
+void _showDropdown() {
+  _overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      width: 200,
+      child: CompositedTransformFollower(
+        link: _link,
+        offset: const Offset(0, 40),
+        showWhenUnlinked: false,
+        child: Material(
+          elevation: 4,
+          child: Container(
+            height: 150,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Overlay.of(context).insert(_overlayEntry!);
+}
+
+In your widget 
+CompositedTransformTarget(
+  link: _link,
+  child: ElevatedButton(
+    onPressed: _showDropdown,
+    child: Text("Open"),
+  ),
+)
+
+// Where you want to show the drop down
+CompositedTransformFollower(
+  link: _layerLink,
+  offset: Offset(0, 50),
+  child: YourDropdown(),
+)
