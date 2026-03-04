@@ -1,0 +1,79 @@
+Case Study: Fixing Incorrect Video Playback in Horizontal ListView
+🔹 Problem Statement
+While implementing a horizontally scrollable media carousel using ListView.builder, I observed unexpected behavior:
+Clicking one tile triggered video playback in another tile.
+Some previously scrolled items continued playing.
+Media state appeared to “jump” between tiles.
+The list contained mixed media types:
+Local video player
+Image-only tile
+External YouTube player links
+============================================
+
+🔹 Initial Architecture
+ListView.builder(
+  scrollDirection: Axis.horizontal,
+  itemCount: items.length,
+  itemBuilder: (context, index) {
+    return MediaTile(item: items[index]);
+  },
+);
+Each MediaTile was a StatefulWidget managing:
+VideoPlayerController
+YouTube player controller (for external links)
+Conditional rendering (image vs video)
+===================================================
+
+🔥 Root Cause
+The issue occurred due to Flutter’s widget reuse mechanism in ListView.builder.
+By default:
+Flutter reuses Element and State objects for performance.
+Without a unique Key, Flutter identifies widgets by position (index).
+When items rebuild or scroll, state may attach to a different item.
+This caused:
+A video controller belonging to Item A being reused for Item B.
+Incorrect playback behavior.
+Mismatched state-to-data mapping.
+🔍 Technical Explanation
+ListView.builder optimizes performance by recycling widgets.
+If identity is not explicitly defined:
+Flutter assumes widgets at the same position are the same logical widget.
+But in dynamic media lists:
+State must be tied to content identity, not index.
+Without a Key, state reuse leads to unpredictable behavior.
+===================================================
+
+✅ Solution
+Added a stable identity using ValueKey.
+return MediaTile(
+  key: ValueKey(items[index].id),
+  item: items[index],
+);
+Now Flutter can correctly associate:
+Each State object
+With the correct media item
+Even when scrolling or rebuilding
+🔐 Additional Safeguards Implemented
+✔ Ensured each tile creates its own controller
+✔ Properly disposed controllers inside dispose()
+✔ Avoided using list index as identity
+✔ Prevented state leakage between tiles
+📈 Outcome
+Correct media playback per tile
+No cross-item state contamination
+Stable scrolling performance
+Predictable lifecycle behavior
+=======================================
+
+🧠 Key Learnings
+ListView.builder reuses widgets aggressively.
+Stateful widgets inside dynamic lists must use stable Key.
+Index is not identity.
+Media controllers must be scoped per item.
+Platform views (e.g., YouTube player) are sensitive to improper reuse.
+=======================================
+
+🎯 Architectural Insight
+This issue reinforced an important design principle:
+In dynamic UI lists, identity must be explicitly defined when state is involved.
+Using Key ensures that state maps to logical data, not visual position.
