@@ -1,0 +1,71 @@
+jsonEncode & Native Parsing (Flutter MethodChannel)
+
+🔹 1️⃣ Default Behavior (Important)
+MethodChannel uses StandardMessageCodec by default.
+It automatically supports:
+
+int
+double
+bool
+String
+List
+Map
+null
+✅ So you can pass a Map directly.
+❌ You do NOT need jsonEncode in most cases.
+=====================================
+
+🔹 2️⃣ Recommended Way (Structured Data)
+Flutter
+await platform.invokeMethod(
+  'connectPrinter',
+  {
+    "ip": "192.168.1.10",
+    "port": 9100,
+  },
+);
+Kotlin
+val ip = call.argument<String>("ip")
+val port = call.argument<Int>("port")
+✔ Clean
+✔ Type-safe
+✔ No manual parsing
+======================================
+
+🔹 3️⃣ When jsonEncode Is Required
+Use jsonEncode only when:
+Native side explicitly expects a JSON string
+Working with third-party SDK that needs raw JSON
+Handling complex nested objects manually
+Flutter
+await platform.invokeMethod(
+  'sendRawJson',
+  jsonEncode(data),
+);
+Kotlin
+val jsonString = call.arguments as String
+val jsonObject = JSONObject(jsonString)
+======================================
+
+🔹 4️⃣ Common Mistake
+❌ Manually creating JSON string:
+'{"ip":"$ip","port":$port}'
+Problems:
+Easy to break format
+Type mismatch issues
+Hard to debug
+=====================================
+
+🔹 5️⃣ Type Mapping Reminder
+Dart	Kotlin
+int	Int
+double	Double
+Map	HashMap
+List	ArrayList
+⚠ Be careful with numbers (sometimes safer to use Number in Kotlin).
+======================================
+
+🎯 Final Rule
+✔ Prefer passing structured Map
+✔ Avoid manual JSON string creation
+✔ Use jsonEncode only when native side expects raw JSON
