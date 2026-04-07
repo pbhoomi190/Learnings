@@ -1,0 +1,43 @@
+Problem I Faced
+While building a UI using a Column, I needed to conditionally render multiple widgets based on different flags.
+At that time, I wasn’t aware that Flutter supports inline if conditions inside widget lists. To handle conditions, I used ternary operators like:
+
+condition
+  ? CustomWidget()
+  : SizedBox.shrink()
+
+Since there were multiple conditions, the widget tree ended up with a lot of unnecessary SizedBox.shrink() placeholders, making the code:
+Hard to read
+Verbose
+Slightly inefficient
+
+I learned that Dart supports collection if and the spread operator (...), which allows cleaner conditional rendering directly inside widget lists.
+
+Improved Approach Using Spread Operator
+Instead of adding empty widgets, I rewrote the code like this:
+
+Column(
+  children: [
+    if (condition1) ...[
+      CustomWidget1(),
+    ],
+    if (condition2) ...[
+      CustomWidget2(),
+    ],
+    if (condition3) ...[
+      CustomWidget3(),
+    ],
+  ],
+)
+
+What Changed
+Removed unnecessary SizedBox.shrink() usage
+Cleaner and more readable widget tree
+No extra invisible widgets in the layout
+Better aligned with Flutter’s declarative UI style
+
+The spread operator (...) allows inserting multiple widgets into a list conditionally, making UI code significantly cleaner and more maintainable.
+
+Takeaway
+Whenever dealing with conditional UI in Flutter, prefer using collection if + spread operator instead of fallback widgets like SizedBox.shrink().
+This leads to cleaner, more expressive, and production-ready code.
