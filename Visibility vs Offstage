@@ -1,0 +1,57 @@
+Core Difference
+Visibility → Controls whether a widget is visible, while optionally keeping it in layout
+Offstage → Keeps widget built but completely out of layout and painting
+
+========================
+
+Mental Models (Easy to Remember)
+
+Visibility = “Hide in place”
+UI is already part of the screen, just hidden
+Like turning a feature ON/OFF
+Can still occupy space (if configured)
+Can preserve state
+
+Visibility = Actor behind a Curtain
+What’s happening?
+The actor is still on stage
+Covered by a curtain
+Still:
+Standing in same position (takes space)
+Remembering lines (state preserved)
+Ready to act instantly
+You can pull the curtain anytime
+
+*******************************************
+
+Offstage = “Keep it ready, but don’t show”
+UI is built but not participating in layout at all
+Like preloading a screen in background
+No space taken
+State is preserved
+
+What’s happening?
+Actor is not on stage
+Waiting behind the stage
+Still:
+Knows lines (state preserved)
+Fully prepared
+BUT:
+Not taking any stage space
+Audience can’t see them
+When needed → actor walks in instantly
+
+==============================
+
+When to Use What
+Use Visibility when:
+You want to toggle UI frequently
+You may want to preserve layout or animations
+UI is part of normal screen structure
+Use Offstage when:
+You want to preload heavy UI
+You need widget ready but hidden
+You don’t want it affecting layout
+
+===============================
+
