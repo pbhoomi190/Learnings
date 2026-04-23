@@ -55,3 +55,4 @@ You don’t want it affecting layout
 
 ===============================
 
+Visibility only preserves layout space when maintainSize is enabled, whereas Offstage always removes the widget from layout while keeping its state alive.
