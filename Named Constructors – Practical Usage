@@ -1,0 +1,28 @@
+Problem
+I had a scenario where a single data model needed to support multiple valid configurations, but:
+Each configuration had different required fields
+Some fields were mutually exclusive
+Using a single constructor would lead to:
+Too many optional parameters
+Invalid object states
+Excessive null checks
+==============================================================
+
+Naive Approach (What Goes Wrong)
+class Task {
+  final String? userId;
+  final String? referenceId;
+  final String type;
+
+  Task({
+    required this.type,
+    this.userId,
+    this.referenceId,
+  });
+}
+Problems:
+Allows invalid combinations:
+type = A but userId = null
+type = B but both fields provided
+Validation shifts to runtime
+Harder to maintain and debug
