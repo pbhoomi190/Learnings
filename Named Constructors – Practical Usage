@@ -26,3 +26,60 @@ type = A but userId = null
 type = B but both fields provided
 Validation shifts to runtime
 Harder to maintain and debug
+==============================================================
+
+Improved Approach – Named Constructors
+class Task {
+  final String? userId;
+  final String? referenceId;
+  final TaskType type;
+
+  Task._({
+    required this.type,
+    this.userId,
+    this.referenceId,
+  });
+
+  // Type A → requires userId
+  Task.typeA({required String userId})
+      : this._(
+          type: TaskType.typeA,
+          userId: userId,
+        );
+
+  // Type B → requires referenceId
+  Task.typeB({required String referenceId})
+      : this._(
+          type: TaskType.typeB,
+          referenceId: referenceId,
+        );
+
+  // Type C → requires both null
+  Task.typeC()
+      : this._(
+          type: TaskType.typeC,
+        );
+}
+
+enum TaskType { typeA, typeB, typeC }
+==============================================================
+
+Benefits
+✅ Enforces valid states at compile time
+✅ Prevents invalid field combinations
+✅ Improves readability of object creation
+✅ Reduces null-check clutter
+✅ Keeps initialization logic centralized
+==============================================================
+
+Key Insight
+Named constructors are useful when a class has multiple valid initialization paths with different constraints.
+==============================================================
+
+When to Use
+Use named constructors when:
+Object has fixed variants
+Each variant has different required inputs
+You want to prevent invalid states early
+
+
