@@ -1,0 +1,45 @@
+I once ran into a really strange rendering issue on Zebra EC55 devices running Android 10. 
+A TextField inside a BottomSheet would randomly have its border broken — sometimes from the edge, sometimes from somewhere in the middle.
+At first, I was convinced it had something to do with the layout. 
+I suspected the BottomSheet padding, the TextField starting at the same position, or even another widget overlapping/clipping the border.
+I tried several layout and padding changes, but nothing worked.
+After a lot of trial and error, I finally tried disabling Flutter's Impeller rendering engine. And surprisingly it worked. 
+
+Issue
+Device: Zebra EC55
+OS: Android 10
+Framework: Flutter
+UI: TextField inside BottomSheet
+TextField borders were randomly breaking.
+The break could appear anywhere edge or middle.
+
+
+What I Tried
+Checked BottomSheet padding.
+Checked TextField positioning.
+Changed margins and spacing.
+Checked for overlapping widgets.
+Checked possible clipping/layout issues.
+Tried multiple UI-level changes.
+Nothing fixed it.
+
+What Finally Worked
+
+Disabled Impeller and forced Flutter to use the Skia renderer.
+
+<meta-data
+    android:name="io.flutter.embedding.android.EnableImpeller"
+    android:value="false" />
+
+After this change, the TextField borders rendered correctly on the affected devices.
+
+Takeaway
+
+If you encounter a weird Flutter rendering issue that is:
+
+Device-specific
+Android-version-specific
+Random/inconsistent
+Not explained by the widget layout
+
+Don't keep changing the UI endlessly.
