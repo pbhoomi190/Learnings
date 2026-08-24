@@ -115,3 +115,22 @@ fontWeight is changed to medium.
 color is changed to red.
 Other properties of the original TextStyle remain unchanged.
 A new TextStyle object is returned.
+
+
+Why use it?
+
+Instead of manually recreating the entire object:
+
+TextStyle(
+  fontSize: oldStyle.fontSize,
+  fontWeight: oldStyle.fontWeight,
+  letterSpacing: oldStyle.letterSpacing,
+  color: Colors.red,
+  // ...many more properties
+)
+
+you can simply do:
+
+oldStyle.copyWith(color: Colors.red)
+
+This is especially useful with immutable objects such as TextStyle, ThemeData, and many Flutter state/model classes.
