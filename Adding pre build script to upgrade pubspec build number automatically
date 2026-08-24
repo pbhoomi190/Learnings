@@ -1,0 +1,77 @@
+The Problem I Faced
+
+I used to frequently forget to update the build number in pubspec.yaml before creating an Android build.
+For example, after creating.
+version: 1.0.0+15
+I would need to manually remember to change it to:
+version: 1.0.0+16
+When you're creating multiple builds for QA or testing, this is a small step, but it's easy to miss.
+
+So instead of adding another step to my build checklist, 
+I added a pre-build script in the Android/Gradle build process that automatically increments the build number before starting the build.
+
+I have added one dart file which calls auto increment script. this file runs before build creation.
+main() {
+  _incrementBuildNumber()
+}
+
+void _incrementBuildNumber() {
+  final file = File('pubspec.yaml');
+
+  if (!file.existsSync()) {
+    throw Exception('pubspec.yaml not found');
+  }
+
+  final content = file.readAsStringSync();
+
+  final regex = RegExp(
+    r'^version:\s*\d+\.\d+\.\d+\+(\d+)\s*$',
+    multiLine: true,
+  );
+
+  final match = regex.firstMatch(content);
+
+  if (match == null) {
+    throw Exception('Version with build number not found in pubspec.yaml');
+  }
+
+  final currentBuildNumber = int.parse(match.group(1)!);
+  final newBuildNumber = currentBuildNumber + 1;
+
+  final updatedContent = content.replaceFirst(
+    match.group(0)!,
+    match.group(0)!.replaceFirst(
+      '+$currentBuildNumber',
+      '+$newBuildNumber',
+    ),
+  );
+
+  file.writeAsStringSync(updatedContent);
+
+  print('Build number: $currentBuildNumber → $newBuildNumber');
+}
+
+===============================================================================
+Android side app level build.gradle file add a task 
+
+// Automatically upgrade Flutter build number before any release build
+task upgradeBuildNumber {
+    doLast {
+        def dartExec = org.gradle.internal.os.OperatingSystem.current().isWindows()
+                ? "${localProperties.getProperty('flutter.sdk')}/bin/dart.bat"
+                : "${localProperties.getProperty('flutter.sdk')}/bin/dart"
+
+        exec {
+            workingDir "${rootProject.projectDir}/.."
+            commandLine dartExec, 'upgrade_build_number.dart'
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name.contains('Release') && task.name.startsWith('assemble')) {
+        task.dependsOn upgradeBuildNumber
+    }
+}
+
+This will also be useful in CI/CD pipelines.
