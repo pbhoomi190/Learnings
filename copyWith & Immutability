@@ -98,3 +98,20 @@ emit(state.copyWith(profileImage: newImage));
 Clean.
 Safe.
 Immutable.
+
+Example
+
+Suppose we want to take the TextStyle from the current theme, change it to FontWeight.medium, and make the color red:
+
+final style = Theme.of(context).textTheme.bodyMedium?.copyWith(
+  fontWeight: FontWeight.medium,
+  color: Colors.red,
+);
+
+Here:
+
+bodyMedium provides the existing TextStyle.
+fontWeight is changed to medium.
+color is changed to red.
+Other properties of the original TextStyle remain unchanged.
+A new TextStyle object is returned.
